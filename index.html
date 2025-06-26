@@ -24,8 +24,17 @@
                     <a href="#contact" class="nav-link">Contact</a>
                 </nav>
                 <div class="nav-actions">
-                    <button class="btn btn-outline">Sign In</button>
-                    <button class="btn btn-primary">Sign Up</button>
+                    <!-- Not logged in -->
+                    <div id="guest-actions">
+                        <a href="login.html" class="btn btn-outline">Sign In</a>
+                        <a href="register.html" class="btn btn-primary">Sign Up</a>
+                    </div>
+                    <!-- Logged in -->
+                    <div id="user-actions" style="display: none;">
+                        <span class="user-welcome">Welcome, <span id="user-name"></span>!</span>
+                        <button class="btn btn-outline" id="admin-panel-btn" style="display: none;">Admin Panel</button>
+                        <button class="btn btn-primary" id="logout-btn">Logout</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -39,7 +48,7 @@
                 <p>Experience the magic of cinema with the latest blockbusters</p>
                 <div class="search-bar">
                     <input type="text" placeholder="Search for movies, theaters..." class="search-input">
-                    <button class="search-btn">
+                    <button class="search-btn" aria-label="Search">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -48,165 +57,186 @@
     </section>
 
     <!-- Movies Section -->
-    <section class="movies-section" id="movies">
+    <section class="movies-section section" id="movies">
         <div class="container">
             <h2 class="section-title">Now Showing</h2>
-            <div class="movies-grid" id="moviesGrid">
-                <!-- Movies will be populated by JavaScript -->
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="genre-filter">Filter by Genre:</label>
+                    <select id="genre-filter">
+                        <option value="">All Genres</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="language-filter">Filter by Language:</label>
+                    <select id="language-filter">
+                        <option value="">All Languages</option>
+                    </select>
+                </div>
+            </div>
+            <div class="movies-grid" id="movies-container">
+                <div class="loading">Loading movies...</div>
             </div>
         </div>
     </section>
 
-    <!-- Movie Details Modal -->
-    <div class="modal-overlay" id="movieModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 id="modalMovieTitle">Movie Title</h3>
-                <button class="close-btn" onclick="closeModal()">
-                    <i class="fas fa-times"></i>
-                </button>
+    <!-- Theatres Section -->
+    <section class="theatres-section section hidden" id="theaters">
+        <div class="container">
+            <h2 class="section-title">Our Theatres</h2>
+            <div class="theatres-grid" id="theatres-container">
+                <div class="loading">Loading theatres...</div>
             </div>
-            <div class="modal-content">
-                <div class="movie-info">
-                    <img id="modalMoviePoster" src="" alt="Movie Poster" class="modal-poster">
-                    <div class="movie-details">
-                        <p><strong>Genre:</strong> <span id="modalGenre"></span></p>
-                        <p><strong>Duration:</strong> <span id="modalDuration"></span></p>
-                        <p><strong>Rating:</strong> <span id="modalRating"></span></p>
-                        <p><strong>Description:</strong></p>
-                        <p id="modalDescription"></p>
-                    </div>
-                </div>
-                
-                <!-- Theater Selection -->
-                <div class="theater-selection">
-                    <h4>Select Theater</h4>
-                    <div class="theater-list" id="theaterList">
-                        <!-- Theaters will be populated by JavaScript -->
-                    </div>
-                </div>
+        </div>
+    </section>
 
-                <!-- Date Selection -->
-                <div class="date-selection">
-                    <h4>Select Date</h4>
-                    <div class="date-list" id="dateList">
-                        <!-- Dates will be populated by JavaScript -->
-                    </div>
-                </div>
+    <!-- Shows Section -->
+    <section class="shows-section section hidden" id="shows">
+        <div class="container">
+            <h2 class="section-title">Available Shows</h2>
+            <div class="shows-grid" id="shows-container">
+                <div class="loading">Loading shows...</div>
+            </div>
+        </div>
+    </section>
 
-                <!-- Time Selection -->
-                <div class="time-selection">
-                    <h4>Select Show Time</h4>
-                    <div class="time-list" id="timeList">
-                        <!-- Times will be populated by JavaScript -->
+    <!-- About Section -->
+    <section class="about-section section hidden" id="about">
+        <div class="container">
+            <h2 class="section-title">About CinemaMax</h2>
+            <div class="about-content">
+                <p>CinemaMax is your premier destination for the latest blockbuster movies. 
+                   Experience cinema like never before with our state-of-the-art screens and sound systems.</p>
+                <div class="features-grid">
+                    <div class="feature">
+                        <i class="fas fa-film"></i>
+                        <h3>Latest Movies</h3>
+                        <p>Catch all the latest releases</p>
                     </div>
-                </div>
-
-                <!-- Seat Selection -->
-                <div class="seat-selection" id="seatSelection" style="display: none;">
-                    <h4>Select Seats</h4>
-                    <div class="screen">
-                        <div class="screen-text">SCREEN</div>
+                    <div class="feature">
+                        <i class="fas fa-couch"></i>
+                        <h3>Comfortable Seating</h3>
+                        <p>Luxurious recliner seats</p>
                     </div>
-                    <div class="seat-map" id="seatMap">
-                        <!-- Seats will be generated by JavaScript -->
+                    <div class="feature">
+                        <i class="fas fa-volume-up"></i>
+                        <h3>Premium Sound</h3>
+                        <p>Dolby Atmos sound system</p>
                     </div>
-                    <div class="seat-legend">
-                        <div class="legend-item">
-                            <div class="seat available"></div>
-                            <span>Available</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="seat selected"></div>
-                            <span>Selected</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="seat occupied"></div>
-                            <span>Occupied</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Booking Summary -->
-                <div class="booking-summary" id="bookingSummary" style="display: none;">
-                    <h4>Booking Summary</h4>
-                    <div class="summary-details">
-                        <p><strong>Movie:</strong> <span id="summaryMovie"></span></p>
-                        <p><strong>Theater:</strong> <span id="summaryTheater"></span></p>
-                        <p><strong>Date:</strong> <span id="summaryDate"></span></p>
-                        <p><strong>Time:</strong> <span id="summaryTime"></span></p>
-                        <p><strong>Seats:</strong> <span id="summarySeats"></span></p>
-                        <p><strong>Total Amount:</strong> <span id="summaryAmount"></span></p>
-                    </div>
-                    <button class="btn btn-primary btn-book" onclick="proceedToPayment()">
-                        Proceed to Payment
-                    </button>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Payment Modal -->
-    <div class="modal-overlay" id="paymentModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Payment</h3>
-                <button class="close-btn" onclick="closePaymentModal()">
-                    <i class="fas fa-times"></i>
-                </button>
+    <!-- Contact Section -->
+    <section class="contact-section section hidden" id="contact">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h3>Address</h3>
+                            <p>123 Cinema Street, Movie City, MC 12345</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h3>Phone</h3>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h3>Email</h3>
+                            <p>info@cinemamax.com</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-content">
-                <div class="payment-form">
-                    <h4>Payment Details</h4>
-                    <form id="paymentForm">
-                        <div class="form-group">
-                            <label for="cardNumber">Card Number</label>
-                            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+        </div>
+    </section>
+
+    <!-- Admin Section (Hidden by default) -->
+    <section class="admin-section section hidden" id="admin">
+        <div class="container">
+            <h2 class="section-title">Admin Panel</h2>
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="showAdminTab('movies')">Manage Movies</button>
+                <button class="tab-btn" onclick="showAdminTab('bookings')">Manage Bookings</button>
+                <button class="tab-btn" onclick="showAdminTab('users')">Manage Users</button>
+            </div>
+            
+            <div class="admin-content">
+                <div class="admin-tab" id="admin-movies">
+                    <h3>Add New Movie</h3>
+                    <form id="add-movie-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="movieId">Movie ID:</label>
+                                <input type="text" id="movieId" name="movieId" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="movieName">Movie Name:</label>
+                                <input type="text" id="movieName" name="name" required>
+                            </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="expiryDate">Expiry Date</label>
-                                <input type="text" id="expiryDate" placeholder="MM/YY" required>
+                                <label for="movieLanguage">Language:</label>
+                                <input type="text" id="movieLanguage" name="language">
                             </div>
                             <div class="form-group">
-                                <label for="cvv">CVV</label>
-                                <input type="text" id="cvv" placeholder="123" required>
+                                <label for="movieGenre">Genre:</label>
+                                <input type="text" id="movieGenre" name="genre">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="cardHolder">Card Holder Name</label>
-                            <input type="text" id="cardHolder" placeholder="John Doe" required>
+                            <label for="targetAudience">Target Audience:</label>
+                            <select id="targetAudience" name="targetAudience">
+                                <option value="General">General</option>
+                                <option value="Kids">Kids</option>
+                                <option value="Teens">Teens</option>
+                                <option value="Adults">Adults</option>
+                            </select>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-pay">
-                            <i class="fas fa-lock"></i>
-                            Pay Now
-                        </button>
+                        <button type="submit" class="btn btn-primary">Add Movie</button>
                     </form>
                 </div>
+                
+                <div class="admin-tab hidden" id="admin-bookings">
+                    <h3>Recent Bookings</h3>
+                    <div id="bookings-list">
+                        <div class="loading">Loading bookings...</div>
+                    </div>
+                </div>
+                
+                <div class="admin-tab hidden" id="admin-users">
+                    <h3>User Management</h3>
+                    <div id="users-list">
+                        <div class="loading">Loading users...</div>
+                    </div>
+                </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Modal Container -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="app.hideModal()">&times;</span>
+            <div class="modal-body"></div>
         </div>
     </div>
 
-    <!-- Success Modal -->
-    <div class="modal-overlay" id="successModal">
-        <div class="modal success-modal">
-            <div class="modal-content">
-                <div class="success-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <h3>Booking Confirmed!</h3>
-                <p>Your tickets have been booked successfully.</p>
-                <div class="ticket-info">
-                    <p><strong>Booking ID:</strong> <span id="bookingId"></span></p>
-                    <p>A confirmation email has been sent to your registered email address.</p>
-                </div>
-                <button class="btn btn-primary" onclick="closeSuccessModal()">
-                    Download Tickets
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+    <!-- Scripts -->
+    <script src="api.js"></script>
+    <script src="admin.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
 </body>
 </html>
